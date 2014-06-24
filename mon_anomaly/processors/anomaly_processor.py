@@ -22,6 +22,7 @@ from mon_anomaly.processors import BaseProcessor
 
 from nupic.data.inference_shifter import InferenceShifter
 from nupic.frameworks.opf.modelfactory import ModelFactory
+#from nupic.algorithms import anomaly_likelihood
 import model_params
 import simplejson
 
@@ -80,12 +81,21 @@ class AnomalyProcessor(BaseProcessor):
                 }
                 result = self.shifter.shift(self.model.run(modelInput))
 
-                inference = result.inferences['multiStepBestPredictions'][5]
+                inferences = result.inferences
+                inference = inferences['multiStepBestPredictions'][5]
                 if inference is not None:
                     value['metric']['name'] = name + '.prediction'
                     value['metric']['value'] = inference
                     str_value = simplejson.dumps(value)
                     self.producer.send_messages(self.topic, str_value)
 
+                if 'anomalyScore' in inferences:
+                    value['metric']['name'] = name + '.anomaly'
+                    value['metric']['value'] = inferences['anomalyScore']
+                    str_value = simplejson.dumps(value)
+                    self.producer.send_messages(self.topic, str_value)
+
 
             self._add_to_queue(self.finished_queue, 'finished', (message[0], message[1].offset))
+
+
