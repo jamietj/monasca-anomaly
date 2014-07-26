@@ -1,24 +1,3 @@
-# ----------------------------------------------------------------------
-# Numenta Platform for Intelligent Computing (NuPIC)
-# Copyright (C) 2013, Numenta, Inc.  Unless you have an agreement
-# with Numenta, Inc., for a separate license for this software code, the
-# following terms and conditions apply:
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 3 as
-# published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses.
-#
-# http://numenta.org/licenses/
-# ----------------------------------------------------------------------
-
 MODEL_PARAMS = {
     # Type of model that the rest of these parameters apply to.
     'model': "CLA",
@@ -31,7 +10,8 @@ MODEL_PARAMS = {
     # Model parameter dictionary.
     'modelParams': {
         # The type of inference that this model will perform
-        'inferenceType': 'TemporalMultiStep',
+        # 'inferenceType': 'TemporalMultiStep',
+        'inferenceType': 'TemporalAnomaly',
 
         'sensorParams': {
             # Sensor diagnostic output verbosity control;
@@ -42,11 +22,11 @@ MODEL_PARAMS = {
 
             # CPU usage encoder.
             'encoders': {
-                'cpu': {
-                    'fieldname': u'cpu',
+                'value': {
+                    'fieldname': u'value',
                     'n': 200,
-                    'name': u'cpu',
-                    'type': 'ScalarEncoder',
+                    'name': u'value',
+                    'type': 'AdaptiveScalarEncoder',
                     'minval': 0.0,
                     'maxval': 100.0,
                     'w': 21

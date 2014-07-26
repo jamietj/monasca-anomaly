@@ -24,7 +24,6 @@ import logging.config
 import multiprocessing
 import os
 import signal
-from state_tracker import ZookeeperStateTracker
 import sys
 import threading
 import time
@@ -58,16 +57,6 @@ def clean_exit(signum, frame=None):
         except Exception:
             pass
 
-    tracker.stop = True
-    max_wait_count = 6
-    while tracker.has_lock:
-        if max_wait_count == 0:
-            log.debug('Max wait reached, proceeding to kill processes')
-            break
-        log.debug('Waiting for all active processing to stop.')
-        max_wait_count -= 1
-        time.sleep(20)
-
     # Kill everything, that didn't already die
     for child in multiprocessing.active_children():
         log.debug('Killing pid %s' % child.pid)
@@ -96,26 +85,12 @@ def main(argv=None):
     # Setup logging
     logging.config.dictConfig(config['logging'])
 
-    finished = multiprocessing.Queue(config['queues']['finished_size'])
-
-    # State Tracker - Used for tracking the progress of fully processed alarms and the zookeeper lock
-    global tracker  # Set to global for use in the cleanup function
-    tracker = ZookeeperStateTracker(
-        config['zookeeper']['url'], config['kafka']['metrics_topic'], finished, config['zookeeper']['max_offset_lag'])
-
-    tracker.lock(clean_exit)  # Only begin if we have the processing lock
-    tracker_thread = threading.Thread(target=tracker.run)
-
-    # Define processors
-
     # AnomalyProcessor
     kafka = multiprocessing.Process(
         target=AnomalyProcessor(
-            finished,
             config['kafka']['url'],
             config['kafka']['group'],
-            config['kafka']['metrics_topic'],
-            tracker.offsets,
+            config['kafka']['metrics_topic']
         ).run
     )
     processors.append(kafka)
@@ -126,21 +101,14 @@ def main(argv=None):
         for process in processors:
             process.start()
 
-        # The offset tracker runs in a thread so the signal handler can run concurrently and cleanly shutdown
-        tracker_thread.start()
-
         # The signal handlers must be added after the processes start otherwise they run on all processes
         signal.signal(signal.SIGCHLD, clean_exit)
         signal.signal(signal.SIGINT, clean_exit)
         signal.signal(signal.SIGTERM, clean_exit)
 
-        # If the tracker fails exit
         while True:
-            if tracker_thread.is_alive():
-                time.sleep(5)
-            else:
-                tracker.has_lock = False
-                clean_exit('tracker died', None)
+            time.sleep(5)
+
     except Exception:
         log.exception('Error! Exiting.')
         for process in processors:
