@@ -17,12 +17,14 @@ import kafka.client
 import kafka.consumer
 import kafka.producer
 import logging
+import datetime
 
 from mon_anomaly.processors import BaseProcessor
 
 from nupic.data.inference_shifter import InferenceShifter
 from nupic.frameworks.opf.modelfactory import ModelFactory
 #from nupic.algorithms import anomaly_likelihood
+from nupic.algorithms.anomaly_likelihood import AnomalyLikelihood
 import model_params
 import simplejson
 
@@ -44,6 +46,7 @@ class AnomalyProcessor(BaseProcessor):
         self.consumer.provide_partition_info()  # Without this the partition is not provided in the response
         self.models = {}
         self.shifters = {}
+        self.anomalyLikelihood = {}
 
         self.producer = kafka.producer.SimpleProducer(self.kafka,
                                               async=False,
@@ -62,7 +65,10 @@ class AnomalyProcessor(BaseProcessor):
             value = simplejson.loads(str_value)
             name = value['metric']['name']
 
-            if '.prediction' in name or '.anomaly_score' in name:
+            if 'cpu_user_perc' not in name:
+                continue
+
+            if '.prediction' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name:
                 continue
 
             dimensions = value['metric']['dimensions']
@@ -73,6 +79,8 @@ class AnomalyProcessor(BaseProcessor):
                 self.models[metric_id] = ModelFactory.create(model_params.MODEL_PARAMS)
                 self.models[metric_id].enableInference({'predictedField': 'value'})
                 self.shifters[metric_id] = InferenceShifter()
+                self.anomalyLikelihood[metric_id] = AnomalyLikelihood()
+                print len(self.models)
 
             model = self.models[metric_id]
             shifter = self.shifters[metric_id]
@@ -95,5 +103,15 @@ class AnomalyProcessor(BaseProcessor):
             if 'anomalyScore' in inferences:
                 value['metric']['name'] = name + '.anomaly_score'
                 value['metric']['value'] = inferences['anomalyScore']
+                str_value = simplejson.dumps(value)
+                self.producer.send_messages(self.topic, str_value)
+
+                anomalyLikelihood = self.anomalyLikelihood[metric_id]
+                likelihood = anomalyLikelihood.anomalyProbability(
+                    modelInput['value'], inferences['anomalyScore'], datetime.datetime.now()
+                )
+
+                value['metric']['name'] = name + '.anomaly_likelihood'
+                value['metric']['value'] = likelihood
                 str_value = simplejson.dumps(value)
                 self.producer.send_messages(self.topic, str_value)
