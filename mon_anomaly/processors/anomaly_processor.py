@@ -23,10 +23,9 @@ from mon_anomaly.processors import BaseProcessor
 
 from nupic.data.inference_shifter import InferenceShifter
 from nupic.frameworks.opf.modelfactory import ModelFactory
-#from nupic.algorithms import anomaly_likelihood
 from nupic.algorithms.anomaly_likelihood import AnomalyLikelihood
-import model_params
 import simplejson
+import json
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +52,15 @@ class AnomalyProcessor(BaseProcessor):
                                               req_acks=kafka.producer.SimpleProducer.ACK_AFTER_LOCAL_WRITE,
                                               ack_timeout=2000)
 
+        # Load the model params JSON
+        with open("./mon_anomaly/model_params.json") as fp:
+            self.model_params = json.load(fp)
+
+        # Update the min/max value for the encoder
+        # sensor_params = self.model_params['modelParams']['sensorParams']
+        # sensor_params['encoders']['value']['maxval'] = options.max
+        # sensor_params['encoders']['value']['minval'] = options.min
+
     def run(self):
         """
         Consume from kafka, evaluate anomaly likelihood and anomaly score, publish to kafka.
@@ -76,7 +84,7 @@ class AnomalyProcessor(BaseProcessor):
             metric_id = name + dimensions_str
 
             if metric_id not in self.models:
-                self.models[metric_id] = ModelFactory.create(model_params.MODEL_PARAMS)
+                self.models[metric_id] = ModelFactory.create(self.model_params)
                 self.models[metric_id].enableInference({'predictedField': 'value'})
                 self.shifters[metric_id] = InferenceShifter()
                 self.anomalyLikelihood[metric_id] = AnomalyLikelihood()
@@ -86,7 +94,8 @@ class AnomalyProcessor(BaseProcessor):
             shifter = self.shifters[metric_id]
 
             modelInput = {
-                'timestamp': value['metric']['timestamp'],
+                #'dttm': value['metric']['timestamp'],
+                'dttm': datetime.datetime.now(),
                 'value': value['metric']['value']
             }
 
