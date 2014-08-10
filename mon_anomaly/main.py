@@ -29,7 +29,8 @@ import threading
 import time
 import yaml
 
-from processors.anomaly_processor import AnomalyProcessor
+from processors.nupic_anomaly_processor import NupicAnomalyProcessor
+from processors.ks_anomaly_processor import KsAnomalyProcessor
 
 log = logging.getLogger(__name__)
 processors = []  # global list to facilitate clean signal handling
@@ -87,7 +88,7 @@ def main(argv=None):
 
     # AnomalyProcessor
     kafka = multiprocessing.Process(
-        target=AnomalyProcessor(
+        target=KsAnomalyProcessor(
             config['kafka']['url'],
             config['kafka']['group'],
             config['kafka']['metrics_topic']

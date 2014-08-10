@@ -30,7 +30,7 @@ import json
 log = logging.getLogger(__name__)
 
 
-class AnomalyProcessor(BaseProcessor):
+class NupicAnomalyProcessor(BaseProcessor):
     """
     """
     def __init__(self, kafka_url, group, topic):
@@ -76,7 +76,7 @@ class AnomalyProcessor(BaseProcessor):
             if 'cpu_user_perc' not in name:
                 continue
 
-            if '.prediction' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name:
+            if '.prediction' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name or 'ks_anomaly_score' in name:
                 continue
 
             dimensions = value['metric']['dimensions']
