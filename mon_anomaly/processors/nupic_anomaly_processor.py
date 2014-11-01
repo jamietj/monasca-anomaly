@@ -73,10 +73,10 @@ class NupicAnomalyProcessor(BaseProcessor):
             value = simplejson.loads(str_value)
             name = value['metric']['name']
 
-            if 'cpu_user_perc' not in name:
+            if 'cpu.user_perc' not in name:
                 continue
 
-            if '.prediction' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name or 'ks_anomaly_score' in name:
+            if '.predicted' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name:
                 continue
 
             dimensions = value['metric']['dimensions']
@@ -104,13 +104,13 @@ class NupicAnomalyProcessor(BaseProcessor):
             inference = inferences['multiStepBestPredictions'][5]
 
             if inference is not None:
-                value['metric']['name'] = name + '.prediction'
+                value['metric']['name'] = name + '.nupic.predicted'
                 value['metric']['value'] = inference
                 str_value = simplejson.dumps(value)
                 self.producer.send_messages(self.topic, str_value)
 
             if 'anomalyScore' in inferences:
-                value['metric']['name'] = name + '.anomaly_score'
+                value['metric']['name'] = name + '.nupic.anomaly_score'
                 value['metric']['value'] = inferences['anomalyScore']
                 str_value = simplejson.dumps(value)
                 self.producer.send_messages(self.topic, str_value)
@@ -120,7 +120,7 @@ class NupicAnomalyProcessor(BaseProcessor):
                     modelInput['value'], inferences['anomalyScore'], datetime.datetime.now()
                 )
 
-                value['metric']['name'] = name + '.anomaly_likelihood'
+                value['metric']['name'] = name + '.nupic.anomaly_likelihood'
                 value['metric']['value'] = likelihood
                 str_value = simplejson.dumps(value)
                 self.producer.send_messages(self.topic, str_value)

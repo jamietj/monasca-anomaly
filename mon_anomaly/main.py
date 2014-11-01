@@ -87,14 +87,25 @@ def main(argv=None):
     logging.config.dictConfig(config['logging'])
 
     # AnomalyProcessor
-    kafka = multiprocessing.Process(
-        target=KsAnomalyProcessor(
+    nupic_anomaly_processor = multiprocessing.Process(
+        target=NupicAnomalyProcessor(
             config['kafka']['url'],
-            config['kafka']['group'],
+            config['kafka']['group'] + '.nupic',
             config['kafka']['metrics_topic']
         ).run
     )
-    processors.append(kafka)
+
+    processors.append(nupic_anomaly_processor)
+
+    ks_anomaly_processor = multiprocessing.Process(
+        target=KsAnomalyProcessor(
+            config['kafka']['url'],
+            config['kafka']['group'] + '.ks',
+            config['kafka']['metrics_topic']
+        ).run
+    )
+
+    processors.append(ks_anomaly_processor)
 
     ## Start
     try:

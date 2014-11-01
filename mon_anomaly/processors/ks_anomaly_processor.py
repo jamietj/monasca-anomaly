@@ -56,10 +56,10 @@ class KsAnomalyProcessor(BaseProcessor):
             value = simplejson.loads(str_value)
             name = value['metric']['name']
 
-            if 'cpu_user_perc' not in name:
+            if 'cpu.user_perc' not in name:
                 continue
 
-            if '.prediction' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name or 'ks_anomaly_score' in name:
+            if '.predicted' in name or '.anomaly_score' in name or '.anomaly_likelihood' in name:
                 continue
 
             dimensions = value['metric']['dimensions']
@@ -78,7 +78,7 @@ class KsAnomalyProcessor(BaseProcessor):
             time_series.append([value['metric']['timestamp'], value['metric']['value']])
             result = self.ks_test(time_series)
 
-            value['metric']['name'] = name + '.ks_anomaly_score'
+            value['metric']['name'] = name + '.ks.anomaly_score'
             value['metric']['value'] = result
             str_value = simplejson.dumps(value)
             self.producer.send_messages(self.topic, str_value)
