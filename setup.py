@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import setuptools
+# THIS FILE IS MANAGED BY THE GLOBAL REQUIREMENTS REPO - DO NOT EDIT
+from setuptools import setup
 
-setuptools.setup(
-    name="mon-anomaly",
-    version="0.1",
-    packages=setuptools.find_packages(exclude=['tests']),
-    entry_points={
-        'console_scripts': [
-            'mon-anomaly = mon_anomaly.main:main'
-        ],
-    },
-    scripts=['tools/mon_anomaly_offsets.py'],
-    test_suite='nose.collector'
+setup(
+    setup_requires=['pbr'],
+    pbr=True,
 )
