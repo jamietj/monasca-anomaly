@@ -82,9 +82,7 @@ ks_opts = [
     cfg.StrOpt('kafka_group'),
     cfg.IntOpt('reference_duration', default=3600),
     cfg.IntOpt('probe_duration', default=600),
-    cfg.FloatOpt('ks_p_value', default=0.05),
     cfg.FloatOpt('ks_d', default=0.5),
-    cfg.FloatOpt('adf', default=0.05),
     cfg.IntOpt('min_samples', default=15)
 ]
 

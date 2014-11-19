@@ -27,7 +27,5 @@ num_processors = 2
 kafka_group = monasca-anomaly.ks
 reference_duration = 3600
 probe_duration = 600
-ks_p_value = 0.05
 ks_d = 0.5
-adf = 0.05
 min_samples = 15

@@ -36,9 +36,7 @@ class KsAnomalyProcessor(AnomalyProcessor):
         ks_config = cfg.CONF.ks
         self._reference_duration = ks_config.reference_duration
         self._probe_duration = ks_config.probe_duration
-        self._ks_p_value = ks_config.ks_p_value
         self._ks_d = ks_config.ks_d
-        self._adf = ks_config.adf
         self._min_samples = ks_config.min_samples
         self._timeseries = {}
 
@@ -47,10 +45,6 @@ class KsAnomalyProcessor(AnomalyProcessor):
 
         if metric_id not in self._timeseries:
             self._timeseries[metric_id] = collections.deque(maxlen=256)
-
-        # 'dttm': value['metric']['timestamp'],
-        #'dttm': datetime.datetime.now(),
-        #'value': value['metric']['value']
 
         time_series = self._timeseries[metric_id]
         time_series.append((metric['timestamp'], metric['value']))
@@ -84,9 +78,10 @@ class KsAnomalyProcessor(AnomalyProcessor):
 
         ks_d, ks_p_value = scipy.stats.ks_2samp(reference, probe)
 
-        if ks_p_value < self._ks_p_value and ks_d > self._ks_d:
-            adf = sm.tsa.stattools.adfuller(reference, 10)
-            if adf[1] < self._adf:
+        if ks_p_value < 0.05 and ks_d > self._ks_d:
+            results = sm.tsa.stattools.adfuller(reference)
+            pvalue = results[1]
+            if pvalue < 0.05:
                 return 1.0
 
         return 0.0

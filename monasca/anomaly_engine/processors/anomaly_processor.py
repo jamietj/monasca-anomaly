@@ -73,6 +73,7 @@ class AnomalyProcessor(object):
                 tenant_id = metric_envelope['meta']['tenantId']
                 dimensions = metric_envelope['metric']['dimensions']
 
+                # TODO: Following code should be in monasca-common as it is also in the Python monasca-persister.
                 metric_id = (
                     urllib.quote(metric_name.encode('utf8'), safe='')
                     + '?' + urllib.quote(tenant_id.encode('utf8'), safe='')
@@ -87,8 +88,6 @@ class AnomalyProcessor(object):
                         dimensions[dimension_name].encode('utf8'), safe=''))
 
                 self._send_predictions(metric_id, metric_envelope)
-
-                raise Exception('a little exception')
 
         except Exception as ex:
             LOG.exception(ex)
