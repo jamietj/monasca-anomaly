@@ -35,8 +35,8 @@ import sys
 import time
 
 from oslo.config import cfg
-from monasca.openstack.common import log
-from monasca.openstack.common import service as os_service
+from openstack.common import log
+from openstack.common import service as os_service
 
 from processors.nupic_anomaly_processor import NupicAnomalyProcessor
 from processors.ks_anomaly_processor import KsAnomalyProcessor
