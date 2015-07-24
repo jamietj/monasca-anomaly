@@ -29,3 +29,9 @@ reference_duration = 3600
 probe_duration = 600
 ks_d = 0.5
 min_samples = 15
+
+[rde]
+kafka_group = monasca-anomaly.rde
+anom_threshold = 0.7
+fault_threshold = 2
+normal_threshold = 4

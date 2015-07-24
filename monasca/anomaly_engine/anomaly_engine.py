@@ -35,11 +35,12 @@ import sys
 import time
 
 from oslo.config import cfg
-from openstack.common import log
-from openstack.common import service as os_service
+from monasca.openstack.common import log
+from monasca.openstack.common import service as os_service
 
 from processors.nupic_anomaly_processor import NupicAnomalyProcessor
 from processors.ks_anomaly_processor import KsAnomalyProcessor
+from processors.rde_anomaly_processor import RDEAnomalyProcessor
 import service
 
 
@@ -89,6 +90,17 @@ ks_opts = [
 ks_group = cfg.OptGroup(name='ks', title='ks')
 cfg.CONF.register_group(ks_group)
 cfg.CONF.register_opts(ks_opts, ks_group)
+
+rde_opts = [
+   cfg.StrOpt('kafka_group')
+   cfg.FloatOpt('anom_threshold', default=0.7)
+   cfg.IntOpt('fault_threshold', default=2)
+   cfg.IntOpt('normal_threshold', defualt=4)   
+]
+
+rde_group = cfg.OptGroup(name='rde', title='rde')
+cfg.CONF.register_group(rde_group)
+cfg.CONF.register_opts(rde_opts, rde_group)
 
 metrics_opts = [
     cfg.ListOpt('names'),
@@ -141,6 +153,8 @@ def main(argv=None):
     cfg.set_defaults(log.log_opts, default_log_levels=log_levels)
     cfg.CONF(argv[1:], project='monasca-anomaly')
     log.setup('monasca-anomaly')
+	
+    print("TEST")
 
     nupic_anomaly_processor = multiprocessing.Process(
         target=NupicAnomalyProcessor().run
@@ -153,6 +167,12 @@ def main(argv=None):
     )
 
     processors.append(ks_anomaly_processor)
+
+    rde_anomaly_processor = multiprocessing.Process(
+	target=RDEAnomalyProcessor().run
+    )
+
+    processors.append(ad3_anomaly_processor)
 
     try:
         LOG.info('Starting processes')
