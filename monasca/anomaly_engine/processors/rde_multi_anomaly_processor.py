@@ -12,10 +12,10 @@ from anomaly_processor import AnomalyProcessor
 
 LOG = log.getLogger(__name__)
 
-class RDEAnomalyProcessor(AnomalyProcessor):
+class RDEMultiAnomalyProcessor(AnomalyProcessor):
 
 	def __init__(self):
-		AnomalyProcessor.__init__(self, cfg.CONF.rde.kafka_group)
+		AnomalyProcessor.__init__(self, cfg.CONF.rde_multi.kafka_group)
 		rde_config = cfg.CONF.rde
 
 		# hostname -> anom vlaues 
@@ -75,7 +75,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		#first iteration of hostname - init anomaly values
 		if hostname not in self._anom_values:
 			self._anom_values[hostname] = {
-				'mean': value, 
+				'mean': sample, 
 				'density': 1.0,
 				'mean_density': 1.0, 
 				'scalar': numpy.linalg.norm(numpy.array(value))**2,
@@ -86,15 +86,16 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 				'fault_flag': 0
 			}
 			anom_values = self._anom_values[hostname]
+
 		#original RDE
 		else:
 			#bring local anomaly values
 			anom_values = self._anom_values[hostname]	
 				
-			anom_values['mean'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['mean'])+((1/anom_values['k'])*value)	 
-			anom_values['scalar'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['scalar'])+((1/anom_values['k'])*(numpy.linalg.norm(numpy.array(value))**2))
+			anom_values['mean'] 		= [(((anom_values['k']-1)/anom_values['k'])*anom_values['mean'][idx])+((1/anom_values['k'])*x) for idx,x in enumerate(sample)]	 
+			anom_values['scalar'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['scalar'])+((1/anom_values['k'])*(numpy.linalg.norm(numpy.array(sample))**2))
 			anom_values['p_density']	= anom_values['density']
-			anom_values['density']		= 1/(1 + ((numpy.linalg.norm(numpy.array(value - anom_values['mean'])))**2) + anom_values['scalar'] - (numpy.linalg.norm(numpy.array(anom_values['mean']))**2))
+			anom_values['density']		= 1/(1 + ((numpy.linalg.norm(numpy.array([x - y for x,y in zip(sample, anom_values['mean'])])))**2) + anom_values['scalar'] - (numpy.linalg.norm(numpy.array(anom_values['mean']))**2))
 			diff						= abs(anom_values['density'] - anom_values['p_density'])
 			anom_values['mean_density']	= ((((anom_values['ks']-1)/anom_values['ks'])*anom_values['mean_density'])+((1/anom_values['ks'])*anom_values['density']))*(1 - diff)+(anom_values['density'] * diff)
 	
@@ -104,18 +105,21 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 					anom_values['fault_flag'] += 1
 					if anom_values['fault_flag'] >= self.fault_threshold:
 						anom_values['status'] 		= 1
-						anom_values['ks'] 		= 0
+						anom_values['ks'] 			= 0
 						anom_values['fault_flag'] 	= 0
 			else:
 				if anom_values['density'] >= anom_values['mean_density']:
 					anom_values['normal_flag'] += 1
 					if anom_values['normal_flag'] >= self.normal_threshold:
 						anom_values['status'] 		= 0
-						anom_values['ks'] 		= 0
+						anom_values['ks'] 			= 0
 						anom_values['normal_flag']	= 0
 
 			anom_values['ks'] += 1
 			anom_values['k'] += 1
+
+		print("------------------------------------")
+		print(str(anom_values))
 
 		return anom_values
 

@@ -41,6 +41,7 @@ from monasca.openstack.common import service as os_service
 from processors.nupic_anomaly_processor import NupicAnomalyProcessor
 from processors.ks_anomaly_processor import KsAnomalyProcessor
 from processors.rde_anomaly_processor import RDEAnomalyProcessor
+from processors.rde_multi_anomaly_processor import RDEMultiAnomalyProcessor
 import service
 
 
@@ -101,6 +102,14 @@ rde_opts = [
 rde_group = cfg.OptGroup(name='rde', title='rde')
 cfg.CONF.register_group(rde_group)
 cfg.CONF.register_opts(rde_opts, rde_group)
+
+rde_multi_opts = [
+    cfg.StrOpt('kafka_group')
+]
+
+rde_multi_group = cfg.OptGroup(name='rde_multi', title='rde_multi')
+cfg.CONF.register_group(rde_multi_group)
+cfg.CONF.register_opts(rde_multi_opts, rde_multi_group)
 
 metrics_opts = [
     cfg.ListOpt('names'),
@@ -169,10 +178,16 @@ def main(argv=None):
     processors.append(ks_anomaly_processor)
 
     rde_anomaly_processor = multiprocessing.Process(
-	target=RDEAnomalyProcessor().run
+	   target=RDEAnomalyProcessor().run
     )
 
     processors.append(rde_anomaly_processor)
+
+    rde_multi_anomaly_processor = multiprocessing.Process(
+        targer=RDEMultiAnomalyProcessor().run
+    )
+
+    processors.append(rde_multi_anomaly_processor)
 
     try:
         LOG.info('Starting processes')
