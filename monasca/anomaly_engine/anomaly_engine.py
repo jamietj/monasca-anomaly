@@ -92,10 +92,10 @@ cfg.CONF.register_group(ks_group)
 cfg.CONF.register_opts(ks_opts, ks_group)
 
 rde_opts = [
-   cfg.StrOpt('kafka_group')
-   cfg.FloatOpt('anom_threshold', default=0.7)
-   cfg.IntOpt('fault_threshold', default=2)
-   cfg.IntOpt('normal_threshold', defualt=4)   
+   cfg.StrOpt('kafka_group'),
+   cfg.FloatOpt('anom_threshold', default=0.7),
+   cfg.IntOpt('fault_threshold', default=2),
+   cfg.IntOpt('normal_threshold', default=4)   
 ]
 
 rde_group = cfg.OptGroup(name='rde', title='rde')
@@ -172,7 +172,7 @@ def main(argv=None):
 	target=RDEAnomalyProcessor().run
     )
 
-    processors.append(ad3_anomaly_processor)
+    processors.append(rde_anomaly_processor)
 
     try:
         LOG.info('Starting processes')
