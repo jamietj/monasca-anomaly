@@ -1,0 +1,114 @@
+2015-07-25 20:57:57.603 7139 CRITICAL monasca-anomaly [-] TypeError: __init__() got an unexpected keyword argument 'targer'
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 187, in main
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly     targer=RDEMultiAnomalyProcessor().run
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly TypeError: __init__() got an unexpected keyword argument 'targer'
+2015-07-25 20:57:57.603 7139 TRACE monasca-anomaly 
+2015-07-25 21:01:04.545 7381 ERROR processors.anomaly_processor [-] global name 'value' is not defined
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 44, in _send_predictions
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor     self._sample_buffer[hostname][name] = value;
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor NameError: global name 'value' is not defined
+2015-07-25 21:01:04.545 7381 TRACE processors.anomaly_processor 
+2015-07-25 21:01:14.054 7363 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:01:14.054 7363 TRACE monasca-anomaly 
+2015-07-25 21:02:32.808 7509 ERROR processors.anomaly_processor [-] 'devstack'
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 44, in _send_predictions
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor     self._sample_buffer[hostname][name] = value;
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor KeyError: 'devstack'
+2015-07-25 21:02:32.808 7509 TRACE processors.anomaly_processor 
+2015-07-25 21:02:41.429 7494 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:02:41.429 7494 TRACE monasca-anomaly 
+2015-07-25 21:13:09.809 8221 ERROR processors.anomaly_processor [-] local variable 'anom_values' referenced before assignment
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 68, in _send_predictions
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor     metric['value'] = anom_values['status']
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor UnboundLocalError: local variable 'anom_values' referenced before assignment
+2015-07-25 21:13:09.809 8221 TRACE processors.anomaly_processor 
+2015-07-25 21:13:17.245 8206 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:13:17.245 8206 TRACE monasca-anomaly 
+2015-07-25 21:16:32.809 8591 ERROR processors.anomaly_processor [-] global name 'rde' is not defined
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 64, in _send_predictions
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor     anom_values = rde(sample, hostname)
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor NameError: global name 'rde' is not defined
+2015-07-25 21:16:32.809 8591 TRACE processors.anomaly_processor 
+2015-07-25 21:16:43.240 8578 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:16:43.240 8578 TRACE monasca-anomaly 
+2015-07-25 21:21:33.809 8939 ERROR processors.anomaly_processor [-] rde() takes exactly 2 arguments (3 given)
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 64, in _send_predictions
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor     anom_values = self.rde(sample, hostname)
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor TypeError: rde() takes exactly 2 arguments (3 given)
+2015-07-25 21:21:33.809 8939 TRACE processors.anomaly_processor 
+2015-07-25 21:21:40.173 8926 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:21:40.173 8926 TRACE monasca-anomaly 
+2015-07-25 21:22:11.570 8995 ERROR processors.anomaly_processor [-] global name 'value' is not defined
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor Traceback (most recent call last):
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/anomaly_processor.py", line 90, in run
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor     self._send_predictions(metric_id, metric_envelope)
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 64, in _send_predictions
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor     anom_values = self.rde(sample, hostname)
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor   File "/home/vagrant/monasca-anomaly-git/monasca/anomaly_engine/processors/rde_multi_anomaly_processor.py", line 84, in rde
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor     'scalar': numpy.linalg.norm(numpy.array(value))**2,
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor NameError: global name 'value' is not defined
+2015-07-25 21:22:11.570 8995 TRACE processors.anomaly_processor 
+2015-07-25 21:22:17.902 8982 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:22:17.902 8982 TRACE monasca-anomaly 
+2015-07-25 21:24:34.068 9047 CRITICAL monasca-anomaly [-] KeyboardInterrupt
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly Traceback (most recent call last):
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 227, in <module>
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly     sys.exit(main(sys.argv))
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly   File "monasca/anomaly_engine/anomaly_engine.py", line 203, in main
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly     time.sleep(5)
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly KeyboardInterrupt
+2015-07-25 21:24:34.068 9047 TRACE monasca-anomaly 

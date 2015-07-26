@@ -37,10 +37,13 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 		metric 		= metric_envelope['metric']
 		name 		= metric['name']
 		dimensions 	= metric['dimensions']
-		vlaue 		= metric['value']
+		value 		= metric['value']
 		hostname	= dimensions['hostname']
 
 		# fill buffer
+		if hostname not in self._sample_buffer:
+			self._sample_buffer[hostname] = {}
+		
 		self._sample_buffer[hostname][name] = value;
 
 		print("Received " + name + " for host " + hostname)
@@ -58,19 +61,22 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 				sample.append(self._sample_buffer[hostname][x])
 
 			#send to anomaly detection
-			anom_values = rde(sample, hostname)
+			anom_values = self.rde(sample, hostname)
 
-			#publish results - should remove dimensions to avoid confusion
-			metric['name'] = hostname + '.rde_multi.' + ".".join(self.metrics) +  '.anomaly_score'
-	       	metric['value'] = anom_values['status']
-	       	str_value = simplejson.dumps(metric_envelope)
-	        self._producer.send_messages(self._topic, str_value)
+			#publish results
+			metric['name'] = hostname + '.rde_multi(' + ", ".join(self.metrics) +  ').anomaly_score'
+		       	metric['value'] = anom_values['status']
 
-	        # clear sample buffer
-	        for x in self.metrics:
-	        	del self._sample_buffer[hostname][x]
+			del metric['dimensions']	#remove dimensions to avoid confusion
+	
+		       	str_value = simplejson.dumps(metric_envelope)
+	       		self._producer.send_messages(self._topic, str_value)
 
-	def rde(sample, hostname):
+	       		# clear sample buffer
+	       	 	for x in self.metrics:
+	        		del self._sample_buffer[hostname][x]
+
+	def rde(self, sample, hostname):
 
 		#first iteration of hostname - init anomaly values
 		if hostname not in self._anom_values:
@@ -78,7 +84,7 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 				'mean': sample, 
 				'density': 1.0,
 				'mean_density': 1.0, 
-				'scalar': numpy.linalg.norm(numpy.array(value))**2,
+				'scalar': numpy.linalg.norm(numpy.array(sample))**2,
 				'k': 2,
 				'ks': 2,
 				'status': 0,

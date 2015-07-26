@@ -177,14 +177,14 @@ def main(argv=None):
 
     processors.append(ks_anomaly_processor)
 
-    rde_anomaly_processor = multiprocessing.Process(
-	   target=RDEAnomalyProcessor().run
-    )
+    #rde_anomaly_processor = multiprocessing.Process(
+#	   target=RDEAnomalyProcessor().run
+ #   )
 
-    processors.append(rde_anomaly_processor)
+#    processors.append(rde_anomaly_processor)
 
     rde_multi_anomaly_processor = multiprocessing.Process(
-        targer=RDEMultiAnomalyProcessor().run
+        target=RDEMultiAnomalyProcessor().run
     )
 
     processors.append(rde_multi_anomaly_processor)
