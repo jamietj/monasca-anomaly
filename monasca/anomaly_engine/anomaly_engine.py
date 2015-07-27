@@ -104,7 +104,10 @@ cfg.CONF.register_group(rde_group)
 cfg.CONF.register_opts(rde_opts, rde_group)
 
 rde_multi_opts = [
-    cfg.StrOpt('kafka_group')
+    cfg.StrOpt('kafka_group'),
+    cfg.StrOpt('sample_name'),
+    cfg.StrOpt('dimension_match'),
+    cfg.ListOpt('sample_metrics')
 ]
 
 rde_multi_group = cfg.OptGroup(name='rde_multi', title='rde_multi')
@@ -162,8 +165,6 @@ def main(argv=None):
     cfg.set_defaults(log.log_opts, default_log_levels=log_levels)
     cfg.CONF(argv[1:], project='monasca-anomaly')
     log.setup('monasca-anomaly')
-	
-    print("TEST")
 
     nupic_anomaly_processor = multiprocessing.Process(
         target=NupicAnomalyProcessor().run
@@ -177,9 +178,10 @@ def main(argv=None):
 
     processors.append(ks_anomaly_processor)
 
-    #rde_anomaly_processor = multiprocessing.Process(
+# just rde_multi for now 
+#    rde_anomaly_processor = multiprocessing.Process(
 #	   target=RDEAnomalyProcessor().run
- #   )
+#   )
 
 #    processors.append(rde_anomaly_processor)
 

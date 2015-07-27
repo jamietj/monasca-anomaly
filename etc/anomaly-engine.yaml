@@ -21,7 +21,6 @@ num_processors = 2
 model_params = etc/model_params.json
 kafka_group = monasca-anomaly.nupic
 
-
 [ks]
 num_processors = 2
 kafka_group = monasca-anomaly.ks
@@ -35,3 +34,9 @@ kafka_group = monasca-anomaly.rde
 anom_threshold = 0.7
 fault_threshold = 2
 normal_threshold = 4
+
+[rde_multi]
+kafka_group = monasca-anomaly.rde_multi
+sample_name = cpu.overall
+sample_metrics = cpu.user_perc, cpu.system_perc
+dimension_match = hostname
