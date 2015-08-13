@@ -18,7 +18,7 @@ names = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net
 
 [nupic]
 num_processors = 2
-model_params = etc/model_params.json
+model_params = /etc/monasca/model_params.json
 kafka_group = monasca-anomaly.nupic
 
 [ks]

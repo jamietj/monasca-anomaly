@@ -23,7 +23,6 @@ cfg.CONF.import_opt('default_log_levels', 'openstack.common.log')
 
 LOG = log.getLogger(__name__)
 
-
 def prepare_service(argv=None):
     gettextutils.install('openstack')
     gettextutils.enable_lazy()

@@ -44,7 +44,6 @@ from processors.rde_anomaly_processor import RDEAnomalyProcessor
 from processors.rde_multi_anomaly_processor import RDEMultiAnomalyProcessor
 import service
 
-
 LOG = log.getLogger(__name__)
 
 kafka_opts = [
@@ -126,7 +125,6 @@ LOG = log.getLogger(__name__)
 processors = []  # global list to facilitate clean signal handling
 exiting = False
 
-
 def clean_exit(signum, frame=None):
     """
     Exit all processes attempting to finish uncommited active work before exit.
@@ -159,8 +157,7 @@ def clean_exit(signum, frame=None):
 
     sys.exit(0)
 
-
-def main(argv=None):
+def main(argv=['--config-file', '/etc/monasca/anomaly-engine.yaml']):
     log_levels = (cfg.CONF.default_log_levels)
     cfg.set_defaults(log.log_opts, default_log_levels=log_levels)
     cfg.CONF(argv[1:], project='monasca-anomaly')
@@ -190,9 +187,9 @@ def main(argv=None):
             process.start()
 
         # The signal handlers must be added after the processes start otherwise they run on all processes
-        # signal.signal(signal.SIGCHLD, clean_exit)
-        #signal.signal(signal.SIGINT, clean_exit)
-        #signal.signal(signal.SIGTERM, clean_exit)
+        signal.signal(signal.SIGCHLD, clean_exit)
+        signal.signal(signal.SIGINT, clean_exit)
+        signal.signal(signal.SIGTERM, clean_exit)
 
         while True:
             time.sleep(5)
@@ -201,7 +198,6 @@ def main(argv=None):
         LOG.exception('Error! Exiting.')
         for process in processors:
             process.terminate()
-
 
 class AnomalyEngine(os_service.Service):
     def __init__(self, threads=1):
@@ -216,7 +212,6 @@ def mainService():
     launcher = os_service.ServiceLauncher()
     launcher.launch_service(AnomalyEngine())
     launcher.wait()
-
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

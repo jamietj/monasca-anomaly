@@ -7,7 +7,7 @@ import simplejson
 import random
 
 from oslo.config import cfg
-from monasca.openstack.common import log
+from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 
 LOG = log.getLogger(__name__)
