@@ -35,8 +35,8 @@ import sys
 import time
 
 from oslo.config import cfg
-from monasca.openstack.common import log
-from monasca.openstack.common import service as os_service
+from openstack.common import log
+from openstack.common import service as os_service
 
 from processors.nupic_anomaly_processor import NupicAnomalyProcessor
 from processors.ks_anomaly_processor import KsAnomalyProcessor
@@ -106,7 +106,7 @@ cfg.CONF.register_opts(rde_opts, rde_group)
 rde_multi_opts = [
     cfg.StrOpt('kafka_group'),
     cfg.StrOpt('sample_name'),
-    cfg.StrOpt('dimension_match'),
+    cfg.ListOpt('dimension_match'),
     cfg.ListOpt('sample_metrics')
 ]
 
@@ -177,13 +177,6 @@ def main(argv=None):
     )
 
     processors.append(ks_anomaly_processor)
-
-# just rde_multi for now 
-#    rde_anomaly_processor = multiprocessing.Process(
-#	   target=RDEAnomalyProcessor().run
-#   )
-
-#    processors.append(rde_anomaly_processor)
 
     rde_multi_anomaly_processor = multiprocessing.Process(
         target=RDEMultiAnomalyProcessor().run

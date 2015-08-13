@@ -16,10 +16,10 @@
 
 from oslo.config import cfg
 import sys
-from monasca.openstack.common import gettextutils
-from monasca.openstack.common import log
+from openstack.common import gettextutils
+from openstack.common import log
 
-cfg.CONF.import_opt('default_log_levels', 'monasca.openstack.common.log')
+cfg.CONF.import_opt('default_log_levels', 'openstack.common.log')
 
 LOG = log.getLogger(__name__)
 

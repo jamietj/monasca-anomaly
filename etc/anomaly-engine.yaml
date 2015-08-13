@@ -14,7 +14,7 @@ passwd = password
 db = mon
 
 [metrics]
-names = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entroy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
+names = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
 
 [nupic]
 num_processors = 2
@@ -38,5 +38,5 @@ normal_threshold = 4
 [rde_multi]
 kafka_group = monasca-anomaly.rde_multi
 sample_name = net_stat.overall
-sample_metrics = names = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entroy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
+sample_metrics = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
 dimension_match = hostname, file

@@ -7,7 +7,7 @@ import simplejson
 import random
 
 from oslo.config import cfg
-from monasca.openstack.common import log
+from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 
 LOG = log.getLogger(__name__)
@@ -56,7 +56,7 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 		
 		self._sample_buffer[match_str][name] = value;
 
-		print("Received " + name + " for " + self.dimension_match + " "  + match_str)
+		print("Received " + name + " for " + str(self.dimension_match) + " "  + match_str)
 
 		# if buffer is full process sample
 		if len(self._sample_buffer[match_str]) == len(self.metrics):

@@ -17,7 +17,7 @@ import kafka.client
 import kafka.consumer
 import kafka.producer
 from oslo.config import cfg
-from monasca.openstack.common import log
+from openstack.common import log
 import simplejson
 import urllib
 

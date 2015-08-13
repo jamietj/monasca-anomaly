@@ -20,7 +20,7 @@ from nupic.data.inference_shifter import InferenceShifter
 from nupic.frameworks.opf.modelfactory import ModelFactory
 from nupic.algorithms.anomaly_likelihood import AnomalyLikelihood
 from oslo.config import cfg
-from monasca.openstack.common import log
+from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 
 
