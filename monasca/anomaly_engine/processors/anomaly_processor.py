@@ -30,11 +30,13 @@ class AnomalyProcessor(object):
     Base class for anomaly processors
     '''
 
-    def __init__(self, group):
+    def __init__(self, instance):
+	self._instance_conf = cfg.CONF[instance]
+	self._kafka_group = self._instance_conf.kafka_group
         self._topic = cfg.CONF.kafka.metrics_topic
-        self._metric_names = cfg.CONF.metrics.names
+        self._metric_names = self._instance_conf.sample_metrics
         self._kafka = kafka.client.KafkaClient(cfg.CONF.kafka.url)
-        self._consumer = kafka.consumer.SimpleConsumer(self._kafka, group, self._topic, auto_commit=True)
+        self._consumer = kafka.consumer.SimpleConsumer(self._kafka, self._kafka_group, self._topic, auto_commit=True)
         self._consumer.seek(0, 2)
         self._consumer.provide_partition_info()  # Without this the partition is not provided in the response
         self._producer = kafka.producer.SimpleProducer(self._kafka,

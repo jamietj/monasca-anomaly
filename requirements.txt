@@ -7,4 +7,8 @@ numpy>=1.9
 nupic>=0.2
 #https://s3-us-west-2.amazonaws.com/artifacts.numenta.org/numenta/nupic/releases/nupic-0.2.6-cp27-none-linux_x86_64.whl
 scipy>=0.16
+<<<<<<< HEAD
 statsmodels>=0.6
+=======
+statsmodels>=0.6
+>>>>>>> 0a6437dfd1d5997871de7b8b0ec0d36f9e9fade9

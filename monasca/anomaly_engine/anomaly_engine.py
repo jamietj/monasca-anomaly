@@ -95,31 +95,13 @@ rde_opts = [
    cfg.StrOpt('kafka_group'),
    cfg.FloatOpt('anom_threshold', default=0.7),
    cfg.IntOpt('fault_threshold', default=2),
-   cfg.IntOpt('normal_threshold', default=4)   
+   cfg.IntOpt('normal_threshold', default=4),   
+   cfg.ListOpt('instances')
 ]
 
 rde_group = cfg.OptGroup(name='rde', title='rde')
 cfg.CONF.register_group(rde_group)
 cfg.CONF.register_opts(rde_opts, rde_group)
-
-rde_multi_opts = [
-    cfg.StrOpt('kafka_group'),
-    cfg.StrOpt('sample_name'),
-    cfg.ListOpt('dimension_match'),
-    cfg.ListOpt('sample_metrics')
-]
-
-rde_multi_group = cfg.OptGroup(name='rde_multi', title='rde_multi')
-cfg.CONF.register_group(rde_multi_group)
-cfg.CONF.register_opts(rde_multi_opts, rde_multi_group)
-
-metrics_opts = [
-    cfg.ListOpt('names'),
-]
-
-metrics_group = cfg.OptGroup(name='metrics', title='metrics')
-cfg.CONF.register_group(metrics_group)
-cfg.CONF.register_opts(metrics_opts, metrics_group)
 
 LOG = log.getLogger(__name__)
 processors = []  # global list to facilitate clean signal handling
@@ -157,29 +139,39 @@ def clean_exit(signum, frame=None):
 
     sys.exit(0)
 
+<<<<<<< HEAD
+
+def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
+=======
 def main(argv=['--config-file', '/etc/monasca/anomaly-engine.yaml']):
+>>>>>>> 0a6437dfd1d5997871de7b8b0ec0d36f9e9fade9
     log_levels = (cfg.CONF.default_log_levels)
     cfg.set_defaults(log.log_opts, default_log_levels=log_levels)
-    cfg.CONF(argv[1:], project='monasca-anomaly')
+    cfg.CONF(['--config-file', '/etc/monasca/anomaly-engine.yaml'], project='monasca-anomaly')
     log.setup('monasca-anomaly')
 
-    nupic_anomaly_processor = multiprocessing.Process(
-        target=NupicAnomalyProcessor().run
-    )
+    for instance in cfg.CONF.rde.instances:
+	#get instance config
+	instance_opts = [
+            cfg.StrOpt('kafka_group'),
+            cfg.StrOpt('sample_name'),
+            cfg.ListOpt('dimension_match'),
+            cfg.ListOpt('sample_metrics')
+    	]
+	instance_group = cfg.OptGroup(name=instance, title=instance)
+    	cfg.CONF.register_group(instance_group)
+    	cfg.CONF.register_opts(instance_opts, instance_group)
+	
+	#start and add to processors
+	rde_multi_anomaly_processor = multiprocessing.Process(target=RDEMultiAnomalyProcessor(instance
+).run)
+	processors.append(rde_multi_anomaly_processor)
 
-    processors.append(nupic_anomaly_processor)
+    #nupic_anomaly_processor = multiprocessing.Process(target=NupicAnomalyProcessor().run)
+    #processors.append(nupic_anomaly_processor)
 
-    ks_anomaly_processor = multiprocessing.Process(
-        target=KsAnomalyProcessor().run
-    )
-
-    processors.append(ks_anomaly_processor)
-
-    rde_multi_anomaly_processor = multiprocessing.Process(
-        target=RDEMultiAnomalyProcessor().run
-    )
-
-    processors.append(rde_multi_anomaly_processor)
+    #ks_anomaly_processor = multiprocessing.Process(target=KsAnomalyProcessor().run)
+    #processors.append(ks_anomaly_processor)
 
     try:
         LOG.info('Starting processes')

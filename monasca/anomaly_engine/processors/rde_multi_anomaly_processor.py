@@ -14,27 +14,26 @@ LOG = log.getLogger(__name__)
 
 class RDEMultiAnomalyProcessor(AnomalyProcessor):
 
-	def __init__(self):
-		AnomalyProcessor.__init__(self, cfg.CONF.rde_multi.kafka_group)
+	def __init__(self, instance):
+		AnomalyProcessor.__init__(self, instance)
 		rde_config = cfg.CONF.rde
-		rde_multi_config = cfg.CONF.rde_multi
 
 		# hostname -> anom vlaues 
 		self._anom_values = {}
 
-		#params - TODO; load in from config file
+		#params
 		self.anom_threshold 	= rde_config.anom_threshold 
 		self.fault_threshold 	= rde_config.fault_threshold
 		self.normal_threshold 	= rde_config.normal_threshold
 
 		# what dimension to match the samples on - LIST
-		self.dimension_match = rde_multi_config.dimension_match
+		self.dimension_match = self._instance_conf.dimension_match
 
 		# what to name the sample when publishing back - log file!
-		self.sample_name = rde_multi_config.sample_name
+		self.sample_name = self._instance_conf.sample_name
 
 		#metric to aggregate - should put these in config and load in
-		self.metrics = rde_multi_config.sample_metrics
+		self.metrics = self._instance_conf.sample_metrics
 
 		# hostname -> sample
 		self._sample_buffer = {}
@@ -56,12 +55,12 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 		
 		self._sample_buffer[match_str][name] = value;
 
-		print("Received " + name + " for " + str(self.dimension_match) + " "  + match_str)
+		#print("Received " + name + " for " + str(self.dimension_match) + " "  + match_str)
 
 		# if buffer is full process sample
 		if len(self._sample_buffer[match_str]) == len(self.metrics):
 
-			print("Sample buffer full for " + match_str)
+			#print("Sample buffer full for " + match_str)
 
 			#create sample
 			sample = [self._sample_buffer[match_str][x] for x in self.metrics]
@@ -145,8 +144,8 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 			anom_values['ks'] += 1
 			anom_values['k'] += 1
 
-		print("------------------------------------")
-		print(str(anom_values))
+		#print("------------------------------------")
+		#print(str(anom_values))
 
 		return anom_values
 
