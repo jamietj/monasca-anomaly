@@ -139,12 +139,7 @@ def clean_exit(signum, frame=None):
 
     sys.exit(0)
 
-<<<<<<< HEAD
-
 def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
-=======
-def main(argv=['--config-file', '/etc/monasca/anomaly-engine.yaml']):
->>>>>>> 0a6437dfd1d5997871de7b8b0ec0d36f9e9fade9
     log_levels = (cfg.CONF.default_log_levels)
     cfg.set_defaults(log.log_opts, default_log_levels=log_levels)
     cfg.CONF(['--config-file', '/etc/monasca/anomaly-engine.yaml'], project='monasca-anomaly')
