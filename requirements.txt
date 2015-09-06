@@ -6,3 +6,4 @@ pyyaml>=3.11
 #https://s3-us-west-2.amazonaws.com/artifacts.numenta.org/numenta/nupic/releases/nupic-0.2.6-cp27-none-linux_x86_64.whl
 nupic>=0.2
 scipy>=0.16
+statsmodels>=0.6
