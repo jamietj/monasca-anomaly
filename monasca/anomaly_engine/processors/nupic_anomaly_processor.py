@@ -19,7 +19,7 @@ import simplejson
 from nupic.data.inference_shifter import InferenceShifter
 from nupic.frameworks.opf.modelfactory import ModelFactory
 from nupic.algorithms.anomaly_likelihood import AnomalyLikelihood
-from oslo.config import cfg
+from oslo_config import cfg
 from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 

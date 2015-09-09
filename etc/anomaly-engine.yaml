@@ -31,16 +31,26 @@ kafka_group = monasca-anomaly.rde
 anom_threshold = 0.7
 fault_threshold = 2
 normal_threshold = 4
-instances = database_005, network_006
+instances = database_005, network_006, network_006_norm
 
 [database_005]
 kafka_group = monasca-anomaly.database_rde
+normalized = false 
 sample_name = database.overall
 sample_metrics = database.num_writes, database.bytes_written, database.io_stall_writes, database.bytes_on_disk
 dimension_match = hostname, host, database
 
 [network_006]
 kafka_group = monasca-anomaly.rde_multi
+normalized = false
 sample_name = net_stat.overall
 sample_metrics = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
 dimension_match = hostname, file
+
+[network_006_norm] 
+kafka_group = monasca-anomaly.rde_multi
+normalized = true
+sample_name = net_stat.overall
+sample_metrics = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
+dimension_match = hostname, file
+

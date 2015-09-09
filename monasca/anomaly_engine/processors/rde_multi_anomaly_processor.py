@@ -6,7 +6,7 @@ import math
 import simplejson
 import random
 
-from oslo.config import cfg
+from oslo_config import cfg
 from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 
@@ -18,8 +18,11 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 		AnomalyProcessor.__init__(self, instance)
 		rde_config = cfg.CONF.rde
 
-		# hostname -> anom vlaues 
+		# dimension_match -> anom vlaues 
 		self._anom_values = {}
+		
+		# dimension_match -> norm_values
+		self._norm_values = {}
 
 		#params
 		self.anom_threshold 	= rde_config.anom_threshold 
@@ -34,6 +37,9 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 
 		#metric to aggregate - should put these in config and load in
 		self.metrics = self._instance_conf.sample_metrics
+
+		#normalize boolean
+		self.normalized = self._instance_conf.normalized
 
 		# hostname -> sample
 		self._sample_buffer = {}
@@ -95,16 +101,47 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 			# clear sample buffer
 			for x in self.metrics:
 				del self._sample_buffer[match_str][x]
+	
+	def normalize(self, sample, match_str):
+		#first itteration
+		if match_str not in self._norm_values:
+			self._norm_values[match_str] = {
+				'sum': sample,
+				'sum2': [i ** 2 for i in sample],
+				'n' : 0,
+			}
+	
+		#update sum
+		self._norm_values[match_str]['sum'] = [x + y for x, y in zip(self._norm_values[match_str]['sum'], sample)]
+		self._norm_values[match_str]['sum2'] = [x + (y**2) for x, y in zip(self._norm_values[match_str]['sum2'], sample)]
+
+		#calculate mean and varience 
+		self._norm_values[match_str]['n'] = self._norm_values[match_str]['n'] + 1					# itterations
+		mean = [i/self._norm_values[match_str]['n'] for i in self._norm_values[match_str]['sum']]			# E(X)
+		mean2 = [i/self._norm_values[match_str]['n'] for i in self._norm_values[match_str]['sum2']]			# E(X^2)
+		var = [i - j ** 2 for i, j in zip(self._norm_values[match_str]['sum'], self._norm_values[match_str]['sum2'])]	# E(x^2) - E(x)^2
+
+		#create 
+		nsample = [(x - y) / math.sqrt(z) for x, y, z in zip(sample, mean, var)]	
+		
+		return nsample
+		
 
 	def rde(self, sample, match_str):
+
+		#need normalized? 
+		if self.normalized:
+			nsample = self.normalize(sample, match_str)
+		else:
+			nsample = sample
 
 		#first iteration of match_str - init anomaly values
 		if match_str not in self._anom_values:
 			self._anom_values[match_str] = {
-				'mean': sample, 
+				'mean': nsample, 
 				'density': 1.0,
 				'mean_density': 1.0, 
-				'scalar': numpy.linalg.norm(numpy.array(sample))**2,
+				'scalar': numpy.linalg.norm(numpy.array(nsample))**2,
 				'k': 2,
 				'ks': 2,
 				'status': 0,
@@ -118,10 +155,10 @@ class RDEMultiAnomalyProcessor(AnomalyProcessor):
 			#bring local anomaly values
 			anom_values = self._anom_values[match_str]	
 				
-			anom_values['mean'] 		= [(((anom_values['k']-1)/anom_values['k'])*anom_values['mean'][idx])+((1/anom_values['k'])*x) for idx,x in enumerate(sample)]	 
-			anom_values['scalar'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['scalar'])+((1/anom_values['k'])*(numpy.linalg.norm(numpy.array(sample))**2))
+			anom_values['mean'] 		= [(((anom_values['k']-1)/anom_values['k'])*anom_values['mean'][idx])+((1/anom_values['k'])*x) for idx,x in enumerate(nsample)]	 
+			anom_values['scalar'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['scalar'])+((1/anom_values['k'])*(numpy.linalg.norm(numpy.array(nsample))**2))
 			anom_values['p_density']	= anom_values['density']
-			anom_values['density']		= 1/(1 + ((numpy.linalg.norm(numpy.array([x - y for x,y in zip(sample, anom_values['mean'])])))**2) + anom_values['scalar'] - (numpy.linalg.norm(numpy.array(anom_values['mean']))**2))
+			anom_values['density']		= 1/(1 + ((numpy.linalg.norm(numpy.array([x - y for x,y in zip(nsample, anom_values['mean'])])))**2) + anom_values['scalar'] - (numpy.linalg.norm(numpy.array(anom_values['mean']))**2))
 			diff						= abs(anom_values['density'] - anom_values['p_density'])
 			anom_values['mean_density']	= ((((anom_values['ks']-1)/anom_values['ks'])*anom_values['mean_density'])+((1/anom_values['ks'])*anom_values['density']))*(1 - diff)+(anom_values['density'] * diff)
 	

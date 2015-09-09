@@ -34,7 +34,7 @@ import signal
 import sys
 import time
 
-from oslo.config import cfg
+from oslo_config import cfg
 from openstack.common import log
 from openstack.common import service as os_service
 
@@ -149,6 +149,7 @@ def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
 	#get instance config
 	instance_opts = [
             cfg.StrOpt('kafka_group'),
+	    cfg.BoolOpt('normalized'),
             cfg.StrOpt('sample_name'),
             cfg.ListOpt('dimension_match'),
             cfg.ListOpt('sample_metrics')

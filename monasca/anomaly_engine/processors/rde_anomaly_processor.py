@@ -6,7 +6,7 @@ import math
 import simplejson
 import random
 
-from oslo.config import cfg
+from oslo_config import cfg
 from openstack.common import log
 from anomaly_processor import AnomalyProcessor
 

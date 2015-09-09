@@ -26,7 +26,7 @@ import threading
 import time
 import weakref
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 from openstack.common import fileutils
 from openstack.common.gettextutils import _, _LE, _LI
