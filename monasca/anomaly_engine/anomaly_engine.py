@@ -147,6 +147,7 @@ def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
 	    cfg.BoolOpt('normalized'),
 	    cfg.BoolOpt('ad3'),
 	    cfg.FloatOpt('anom_threshold'),
+	    cfg.FloatOpt('normal_threshold'),
 	    cfg.IntOpt('fault_ittr'),
 	    cfg.IntOpt('normal_ittr'),
             cfg.StrOpt('sample_name'),

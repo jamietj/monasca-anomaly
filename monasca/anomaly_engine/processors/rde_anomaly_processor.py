@@ -25,6 +25,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 
 		#params
 		self.anom_threshold 	= self._instance_conf.anom_threshold 
+		self.normal_threshold	= self._instance_conf.normal_threshold
 		self.fault_ittr 	= self._instance_conf.fault_ittr
 		self.normal_ittr 	= self._instance_conf.normal_ittr
 
@@ -170,7 +171,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 			diff				= abs(anom_values['density'] - anom_values['p_density'])
 			
 			# if using ad3 - dont update mean_density while anomalous
-			if (not self.ad3) or (anom_values['status'] == 0 and self.ad3):
+			if (self.ad3 == False) or (anom_values['status'] == 0 and self.ad3 == True):
 				anom_values['mean_density']	= ((((anom_values['ks']-1)/anom_values['ks'])*anom_values['mean_density'])+((1/anom_values['ks'])*anom_values['density']))*(1 - diff)+(anom_values['density'] * diff)
 	
 			#anomaly detection
@@ -184,7 +185,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 						anom_values['ks'] 		= 0
 						anom_values['fault_flag'] 	= 0
 			else:
-				if anom_values['density'] >= anom_values['mean_density']:
+				if anom_values['density'] >= anom_values['mean_density'] * self.normal_threshold:
 					anom_values['normal_flag'] += 1
 					
 					# enter normal state
