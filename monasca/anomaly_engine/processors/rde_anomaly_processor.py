@@ -16,7 +16,6 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 
 	def __init__(self, instance):
 		AnomalyProcessor.__init__(self, instance)
-		rde_config = cfg.CONF.rde
 
 		# dimension_match -> anom vlaues 
 		self._anom_values = {}
@@ -25,9 +24,9 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		self._norm_values = {}
 
 		#params
-		self.anom_threshold 	= rde_config.anom_threshold 
-		self.fault_threshold 	= rde_config.fault_threshold
-		self.normal_threshold 	= rde_config.normal_threshold
+		self.anom_threshold 	= self._instance_conf.anom_threshold 
+		self.fault_ittr 	= self._instance_conf.fault_ittr
+		self.normal_ittr 	= self._instance_conf.normal_ittr
 
 		# what dimension to match the samples on - LIST
 		self.dimension_match = self._instance_conf.dimension_match
@@ -38,10 +37,13 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		#metric to aggregate - should put these in config and load in
 		self.metrics = self._instance_conf.sample_metrics
 
-		#normalize boolean
+		#normalize?
 		self.normalized = self._instance_conf.normalized
 
-		# hostname -> sample
+		#implement the additional features in AD3?
+		self.ad3 = self._instance_conf.ad3
+
+		# dimension_match -> sample
 		self._sample_buffer = {}
 
 	def _send_predictions(self, metric_id, metric_envelope):
@@ -119,17 +121,17 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		norm_values['sum2'] = [x + (y**2) for x, y in zip(norm_values['sum2'], sample)]
 
 		#increment iteration 
-		norm_values['n'] = norm_values['n'] + 1
+		norm_values['n'] += 1
 
 		#calculate mean and varience 
-		mean = [i/norm_values['n'] for i in norm_values['sum']]		# E(X)
-		mean2 = [i/norm_values['n'] for i in norm_values['sum2']]	# E(X^2)
-		var = [math.sqrt(i - j ** 2) for i, j in zip(mean2, mean)]	# sqrt(E(x^2) - E(x)^2)
+		mean = [float(i/norm_values['n']) for i in norm_values['sum']]		# E(X)
+		mean2 = [float(i/norm_values['n']) for i in norm_values['sum2']]	# E(X^2)
+		var = [float(math.sqrt(i - j ** 2)) for i, j in zip(mean2, mean)]	# sqrt(E(x^2) - E(x)^2)
 
 		self._norm_values[match_str] = norm_values		
 
 		#create new sample
-		return [(x - y) / z for x, y, z in zip(sample, mean, var)]
+		return [float((x - y) / z) for x, y, z in zip(sample, mean, var)]
 		
 
 	def rde(self, sample, match_str):
@@ -159,28 +161,44 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		else:
 			#bring local anomaly values
 			anom_values = self._anom_values[match_str]	
-				
+			
+			#reccursive updates	
 			anom_values['mean'] 		= [(((anom_values['k']-1)/anom_values['k'])*anom_values['mean'][idx])+((1/anom_values['k'])*x) for idx,x in enumerate(nsample)]	 
 			anom_values['scalar'] 		= (((anom_values['k']-1)/anom_values['k'])*anom_values['scalar'])+((1/anom_values['k'])*(numpy.linalg.norm(numpy.array(nsample))**2))
 			anom_values['p_density']	= anom_values['density']
 			anom_values['density']		= 1/(1 + ((numpy.linalg.norm(numpy.array([x - y for x,y in zip(nsample, anom_values['mean'])])))**2) + anom_values['scalar'] - (numpy.linalg.norm(numpy.array(anom_values['mean']))**2))
-			diff						= abs(anom_values['density'] - anom_values['p_density'])
-			anom_values['mean_density']	= ((((anom_values['ks']-1)/anom_values['ks'])*anom_values['mean_density'])+((1/anom_values['ks'])*anom_values['density']))*(1 - diff)+(anom_values['density'] * diff)
+			diff				= abs(anom_values['density'] - anom_values['p_density'])
+			
+			# if using ad3 - dont update mean_density while anomalous
+			if (not self.ad3) or (anom_values['status'] == 0 and self.ad3):
+				anom_values['mean_density']	= ((((anom_values['ks']-1)/anom_values['ks'])*anom_values['mean_density'])+((1/anom_values['ks'])*anom_values['density']))*(1 - diff)+(anom_values['density'] * diff)
 	
 			#anomaly detection
 			if anom_values['status'] == 0:
 				if anom_values['density'] < anom_values['mean_density'] * self.anom_threshold:
 					anom_values['fault_flag'] += 1
-					if anom_values['fault_flag'] >= self.fault_threshold:
+					
+					# enter anomalous state
+					if anom_values['fault_flag'] >= self.fault_ittr:
 						anom_values['status'] 		= 1
-						anom_values['ks'] 			= 0
+						anom_values['ks'] 		= 0
 						anom_values['fault_flag'] 	= 0
 			else:
 				if anom_values['density'] >= anom_values['mean_density']:
 					anom_values['normal_flag'] += 1
-					if anom_values['normal_flag'] >= self.normal_threshold:
+					
+					# enter normal state
+					if anom_values['normal_flag'] >= self.normal_ittr:
+						
+						# if using ad3 - when coming from anomalous state - reset
+						if self.ad3:
+							anom_values['density'] 		= 1.0
+							anom_values['mean_density'] 	= 1.0
+							anom_values['mean']		= nsample
+							anom_values['scalar']		= numpy.linalg.norm(numpy.array(nsample))**2
+	
 						anom_values['status'] 		= 0
-						anom_values['ks'] 			= 0
+						anom_values['ks'] 		= 0
 						anom_values['normal_flag']	= 0
 
 			anom_values['ks'] += 1

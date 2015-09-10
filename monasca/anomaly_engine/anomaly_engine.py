@@ -91,10 +91,6 @@ cfg.CONF.register_group(ks_group)
 cfg.CONF.register_opts(ks_opts, ks_group)
 
 rde_opts = [
-   cfg.StrOpt('kafka_group'),
-   cfg.FloatOpt('anom_threshold', default=0.7),
-   cfg.IntOpt('fault_threshold', default=2),
-   cfg.IntOpt('normal_threshold', default=4),   
    cfg.ListOpt('instances')
 ]
 
@@ -149,6 +145,10 @@ def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
 	instance_opts = [
             cfg.StrOpt('kafka_group'),
 	    cfg.BoolOpt('normalized'),
+	    cfg.BoolOpt('ad3'),
+	    cfg.FloatOpt('anom_threshold'),
+	    cfg.IntOpt('fault_ittr'),
+	    cfg.IntOpt('normal_ittr'),
             cfg.StrOpt('sample_name'),
             cfg.ListOpt('dimension_match'),
             cfg.ListOpt('sample_metrics')

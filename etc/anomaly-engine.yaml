@@ -27,15 +27,15 @@ ks_d = 0.5
 min_samples = 15
 
 [rde]
-kafka_group = monasca-anomaly.rde
-anom_threshold = 0.7
-fault_threshold = 2
-normal_threshold = 4
-instances = database_005, network_006, network_006_norm
+instances = database_005, network_006, network_006_ad3
 
 [database_005]
 kafka_group = monasca-anomaly.database_rde
-normalized = false 
+normalized = false
+ad3 = false 
+anom_threshold = 0.7
+fault_ittr = 2
+normal_ittr = 4
 sample_name = database.overall
 sample_metrics = database.num_writes, database.bytes_written, database.io_stall_writes, database.bytes_on_disk
 dimension_match = hostname, host, database
@@ -43,14 +43,22 @@ dimension_match = hostname, host, database
 [network_006]
 kafka_group = monasca-anomaly.rde_multi
 normalized = false
+ad3 = false
+anom_threshold = 0.7
+fault_ittr = 2
+normal_ittr = 4
 sample_name = net_stat.overall
 sample_metrics = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
 dimension_match = hostname, file
 
-[network_006_norm] 
+[network_006_ad3] 
 kafka_group = monasca-anomaly.rde_multi
 normalized = true
-sample_name = net_stat.overall
+ad3 = true
+anom_threshold = 0.9
+fault_ittr = 3
+normal_ittr = 1 
+sample_name = net_stat_ad3.overall
 sample_metrics = net_stat.activeflows, net_stat.bytecnt, net_stat.byte_count_entropy, net_stat.packetcnt, net_stat.dstIP_entropy, net_stat.dst_port_entropy, net_stat.srcIP_entropy, net_stat.src_port_entropy
 dimension_match = hostname, file
 
