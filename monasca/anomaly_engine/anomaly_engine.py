@@ -41,7 +41,6 @@ from openstack.common import service as os_service
 from processors.nupic_anomaly_processor import NupicAnomalyProcessor
 from processors.ks_anomaly_processor import KsAnomalyProcessor
 from processors.rde_anomaly_processor import RDEAnomalyProcessor
-from processors.rde_multi_anomaly_processor import RDEMultiAnomalyProcessor
 import service
 
 LOG = log.getLogger(__name__)
@@ -159,9 +158,9 @@ def main(argv=['--config-file','/etc/monasca/anomaly-engine.yaml']):
     	cfg.CONF.register_opts(instance_opts, instance_group)
 	
 	#start and add to processors
-	rde_multi_anomaly_processor = multiprocessing.Process(target=RDEMultiAnomalyProcessor(instance
+	rde_anomaly_processor = multiprocessing.Process(target=RDEAnomalyProcessor(instance
 ).run)
-	processors.append(rde_multi_anomaly_processor)
+	processors.append(rde_anomaly_processor)
 
     #nupic_anomaly_processor = multiprocessing.Process(target=NupicAnomalyProcessor().run)
     #processors.append(nupic_anomaly_processor)
