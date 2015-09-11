@@ -132,7 +132,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		self._norm_values[match_str] = norm_values		
 
 		#create new sample
-		return [float((x - y) / z) for x, y, z in zip(sample, mean, var)]
+		return [float((x - y) / z) if z != 0 else 0 for x, y, z in zip(sample, mean, var)]
 		
 
 	def rde(self, sample, match_str):
@@ -146,7 +146,7 @@ class RDEAnomalyProcessor(AnomalyProcessor):
 		#first iteration of match_str - init anomaly values
 		if match_str not in self._anom_values:
 			self._anom_values[match_str] = {
-				'mean': nsample, 
+				'mean': nsample,
 				'density': 1.0,
 				'mean_density': 1.0, 
 				'scalar': numpy.linalg.norm(numpy.array(nsample))**2,
